@@ -19,8 +19,20 @@ app.use((req, res, next) => {
     next();
 });
 
-// connect callbackRouter
+// Connect callbackRouter
 app.use('/', callbackRouter);
+
+// Global error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack); // Log the error stack for debugging
+    log(`Internal Server Error: ${err.message}`); // Log the error message
+
+    // Respond with a generic error message
+    res.status(500).json({ 
+        message: 'Internal Server Error', 
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined 
+    });
+});
 
 // Start Server
 app.listen(PORT, () => {
